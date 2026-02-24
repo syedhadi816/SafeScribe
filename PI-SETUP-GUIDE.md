@@ -107,6 +107,18 @@ The installer installs Ollama and pulls the `gemma2:2b-instruct-q4_0` model auto
 
 ---
 
+## Email (sending meeting notes)
+
+To have meeting notes emailed to you, use **your email and a 16-character app password** (not your normal password). No separate sign-up (e.g. Brevo) is needed.
+
+1. Create an app password: [Gmail](https://myaccount.google.com/apppasswords), [Outlook](https://account.microsoft.com/security), or your provider’s “app password” in security settings.
+2. On the Pi: `sudo nano /etc/safescribe/env` and set `SMTP_USER=` your email and `SMTP_APP_PASSWORD=` the 16-character password. For Gmail, the defaults are already set.
+3. Restart: `sudo systemctl restart safescribe`.
+
+See **raspberry-pi/README.md** (section “Enabling email”) for more detail.
+
+---
+
 ## Troubleshooting
 
 **SafeScribe does not appear after boot**

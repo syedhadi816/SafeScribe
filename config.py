@@ -29,10 +29,10 @@ USB_MOUNT_POINTS = [
 API_HOST = os.environ.get("SAFESCRIBE_API_HOST", "0.0.0.0")
 API_PORT = int(os.environ.get("SAFESCRIBE_API_PORT", "8765"))
 
-# Brevo transactional email (SMTP)
-# Set BREVO_SMTP_* via environment (e.g. /etc/safescribe/env on Pi). No defaults for secrets.
-BREVO_SMTP_HOST = os.environ.get("BREVO_SMTP_HOST", "smtp-relay.brevo.com")
-BREVO_SMTP_PORT = int(os.environ.get("BREVO_SMTP_PORT", "587"))
-BREVO_SMTP_LOGIN = os.environ.get("BREVO_SMTP_LOGIN", "")
-BREVO_SMTP_KEY = os.environ.get("BREVO_SMTP_KEY", "")
-BREVO_SMTP_FROM = os.environ.get("BREVO_SMTP_FROM", "")
+# Email (SMTP) – use your email + 16-character app password (e.g. Gmail App Password)
+# Set via environment (e.g. /etc/safescribe/env on Pi). Defaults below are for Gmail.
+SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
+SMTP_USER = os.environ.get("SMTP_USER", "")           # Your email (e.g. you@gmail.com)
+SMTP_APP_PASSWORD = os.environ.get("SMTP_APP_PASSWORD", "")  # 16-char app password, not your normal password
+SMTP_FROM = os.environ.get("SMTP_FROM", "")          # Optional; defaults to SMTP_USER when sending

@@ -30,6 +30,29 @@ After install: enable desktop autologin (`sudo raspi-config` → Boot Options �
 
 **Using a different repo or branch?** Set `SAFESCRIBE_REPO` or `SAFESCRIBE_BRANCH` before running the one-liner, or use Option B with your clone URL.
 
+### Enabling email (your email + app password)
+
+Meeting notes are sent by email using **your own email account** and a **16-character app password** (no separate sign-up needed).
+
+1. **Create an app password** (not your normal email password):
+   - **Gmail:** [Google App Passwords](https://myaccount.google.com/apppasswords) – you may need 2-Step Verification on first. Copy the 16-character password.
+   - **Outlook/Hotmail:** [Microsoft Security → Advanced security → App passwords](https://account.microsoft.com/security).
+   - **Yahoo/others:** Check your provider’s “app password” or “application password” in account security.
+2. On the Pi, edit the env file and add your email and that 16-character password:
+   ```bash
+   sudo nano /etc/safescribe/env
+   ```
+   Set:
+   - `SMTP_USER=` your full email (e.g. `you@gmail.com`)
+   - `SMTP_APP_PASSWORD=` the 16-character app password (no spaces)
+   - For Gmail the defaults (`SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`) are already set. For other providers, set `SMTP_HOST` and `SMTP_PORT` as needed.
+3. Restart the backend:
+   ```bash
+   sudo systemctl restart safescribe
+   ```
+
+Emails will be sent **from** your email address. Until this is done, recording and summaries still work; only the “email when ready” step will fail until email is configured.
+
 ---
 
 ## What to Copy to the Pi (manual install)

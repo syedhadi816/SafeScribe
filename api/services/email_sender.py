@@ -1,32 +1,37 @@
-"""Email sending via Brevo SMTP - OTP verification and meeting PDFs."""
+"""Email sending via SMTP - OTP verification and meeting PDFs. Use your email + 16-char app password."""
 import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
-from config import BREVO_SMTP_HOST, BREVO_SMTP_PORT, BREVO_SMTP_LOGIN, BREVO_SMTP_KEY, BREVO_SMTP_FROM
+from config import SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_APP_PASSWORD, SMTP_FROM
 
 
-def _get_brevo_config() -> dict | None:
-    if not BREVO_SMTP_LOGIN or not BREVO_SMTP_KEY:
+def _get_smtp_config() -> dict | None:
+    """Return SMTP config if user and app password are set."""
+    if not SMTP_USER or not SMTP_APP_PASSWORD:
         return None
     return {
-        "host": BREVO_SMTP_HOST,
-        "port": BREVO_SMTP_PORT,
-        "login": BREVO_SMTP_LOGIN,
-        "password": BREVO_SMTP_KEY,
+        "host": SMTP_HOST,
+        "port": SMTP_PORT,
+        "login": SMTP_USER,
+        "password": SMTP_APP_PASSWORD,
     }
 
 
+def _from_address() -> str:
+    return SMTP_FROM.strip() or SMTP_USER
+
+
 def _send_email(to_email: str, subject: str, body_text: str, attachments: list[tuple[str, bytes, str]] | None = None) -> bool:
-    """Send email via Brevo SMTP."""
-    cfg = _get_brevo_config()
+    """Send email via SMTP (Gmail, Outlook, etc. with app password)."""
+    cfg = _get_smtp_config()
     if not cfg:
-        raise ValueError("Brevo SMTP not configured. Set BREVO_SMTP_LOGIN and BREVO_SMTP_KEY.")
+        raise ValueError("Email not configured. Set SMTP_USER and SMTP_APP_PASSWORD in /etc/safescribe/env (use a 16-character app password, not your normal password).")
     msg = MIMEMultipart()
     msg["Subject"] = subject
-    msg["From"] = BREVO_SMTP_FROM
+    msg["From"] = _from_address()
     msg["To"] = to_email
     msg.attach(MIMEText(body_text, "plain"))
     if attachments:
@@ -102,7 +107,7 @@ def send_meeting_pdf(
     meeting_duration: int | None = None,
     smtp_config: dict | None = None,
 ) -> bool:
-    """Send meeting PDF to recipient via Brevo SMTP."""
+    """Send meeting PDF to recipient via SMTP (email + app password)."""
     body = _build_meeting_email_body(
         meeting_title,
         meeting_time=_format_datetime(meeting_created_at) if meeting_created_at else None,
@@ -124,9 +129,9 @@ def send_meeting_pdf(
             server.login(smtp_config["email"], smtp_config["password"])
             server.send_message(msg)
         return True
-    # Brevo path
-    if not _get_brevo_config():
-        raise ValueError("Email not configured. Set up Brevo SMTP and verify your email in Settings.")
+    # SMTP path (app password)
+    if not _get_smtp_config():
+        raise ValueError("Email not configured. Set SMTP_USER and SMTP_APP_PASSWORD in /etc/safescribe/env (use a 16-character app password).")
     with open(pdf_path, "rb") as f:
         pdf_data = f.read()
     _send_email(

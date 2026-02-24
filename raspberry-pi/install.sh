@@ -84,16 +84,18 @@ sed -e "s|SAFESCRIBE_PATH|$SAFESCRIBE_PATH|g" -e "s|SAFESCRIBE_USER|$SAFESCRIBE_
 sudo systemctl daemon-reload
 sudo systemctl enable safescribe.service
 sudo systemctl disable safescribe-kiosk.service 2>/dev/null || true
-# Brevo email: create env file if missing (user must add SMTP key)
+# Email: create env file if missing (user adds email + 16-char app password)
 sudo mkdir -p /etc/safescribe
 if [ ! -f /etc/safescribe/env ]; then
   sudo tee /etc/safescribe/env > /dev/null << 'ENVFILE'
-# Brevo SMTP - get key from Brevo: Settings → SMTP & API → SMTP key
-BREVO_SMTP_LOGIN=
-BREVO_SMTP_KEY=
-BREVO_SMTP_FROM=notes@safescribe.site
+# Email (Gmail example) – use your email and a 16-character App Password (not your normal password)
+# Gmail: https://myaccount.google.com/apppasswords
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=
+SMTP_APP_PASSWORD=
 ENVFILE
-  echo "  Created /etc/safescribe/env — add your Brevo SMTP key and restart: sudo systemctl restart safescribe"
+  echo "  Created /etc/safescribe/env — add your email and 16-char app password, then: sudo systemctl restart safescribe"
 fi
 
 # 9. Allow SafeScribe user to control WiFi (fixes "Not Authorized to control networking")

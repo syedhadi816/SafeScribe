@@ -31,8 +31,8 @@ def _normalize_email(e: str) -> str:
 
 @router.get("/email-status")
 def email_status():
-    """Check if Brevo SMTP is configured (for debugging)."""
-    cfg = email_sender._get_brevo_config()
+    """Check if SMTP (email + app password) is configured (for debugging)."""
+    cfg = email_sender._get_smtp_config()
     return {"configured": cfg is not None, "hasKey": bool(cfg)}
 
 
