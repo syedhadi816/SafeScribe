@@ -1,0 +1,1 @@
+"""SafeScribe API package."""

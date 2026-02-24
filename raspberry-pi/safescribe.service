@@ -1,0 +1,18 @@
+[Unit]
+Description=SafeScribe Backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=SAFESCRIBE_USER
+Group=SAFESCRIBE_USER
+WorkingDirectory=SAFESCRIBE_PATH
+Environment=PATH=SAFESCRIBE_PATH/venv/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=-/etc/safescribe/env
+ExecStart=SAFESCRIBE_PATH/venv/bin/python run.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

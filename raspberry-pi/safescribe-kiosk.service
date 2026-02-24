@@ -1,0 +1,17 @@
+[Unit]
+Description=SafeScribe Kiosk (Chromium fullscreen)
+After=graphical.target safescribe.service
+Requires=graphical.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+ExecStart=/home/pi/safescribe/raspberry-pi/kiosk.sh
+Restart=on-abort
+RestartSec=5
+
+[Install]
+WantedBy=graphical.target

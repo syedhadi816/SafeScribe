@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=SafeScribe Kiosk
+Comment=Launch SafeScribe in fullscreen
+Exec=SAFESCRIBE_PATH/raspberry-pi/kiosk.sh
+X-GNOME-Autostart-enabled=true
+Terminal=false
