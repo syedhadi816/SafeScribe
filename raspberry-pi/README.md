@@ -60,8 +60,8 @@ Emails will be sent **from** your email address. Until this is done, recording a
 Copy the **entire SafeScribe folder** to the Pi, but **exclude** these to avoid issues:
 
 - `venv/` – Python virtual environment (install creates it fresh)
-- `Dev Stuff/AI Note-Taking Device/node_modules/` – Node dependencies (install creates them)
-- `Dev Stuff/AI Note-Taking Device/build/` – Optional; install rebuilds it
+- `frontend/node_modules/` – Node dependencies (install creates them)
+- `frontend/build/` – Optional; install rebuilds it
 
 **To create a clean zip for transfer:**
 
@@ -87,4 +87,4 @@ Then copy `SafeScribe-pi.zip` to the Pi and unzip in your home folder.
 3. Enable auto-login: `sudo raspi-config` → Boot Options → Desktop Autologin
 4. Reboot: `sudo reboot`
 
-See **PI-SETUP-GUIDE.md** in the project root for the full step-by-step guide.
+See **docs/PI-SETUP-GUIDE.md** for the full step-by-step guide.

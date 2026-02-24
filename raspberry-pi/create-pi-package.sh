@@ -11,8 +11,8 @@ echo "Creating SafeScribe Pi package..."
 rm -f "$OUTPUT"
 zip -r "$OUTPUT" . \
   -x "venv/*" \
-  -x "Dev Stuff/AI Note-Taking Device/node_modules/*" \
-  -x "Dev Stuff/AI Note-Taking Device/build/*" \
+  -x "frontend/node_modules/*" \
+  -x "frontend/build/*" \
   -x "*.git*" \
   -x ".DS_Store" \
   -x "data/*" \

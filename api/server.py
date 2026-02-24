@@ -45,7 +45,7 @@ def health():
     return {"status": "ok"}
 
 
-_FRONTEND_BUILD = Path(__file__).resolve().parent.parent / "Dev Stuff" / "AI Note-Taking Device" / "build"
+_FRONTEND_BUILD = Path(__file__).resolve().parent.parent / "frontend" / "build"
 if _FRONTEND_BUILD.exists():
     from fastapi.staticfiles import StaticFiles
     app.mount("/", StaticFiles(directory=str(_FRONTEND_BUILD), html=True), name="frontend")

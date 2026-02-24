@@ -31,7 +31,7 @@ chmod +x raspberry-pi/create-pi-package.sh
 Or create the zip manually:
 
 ```bash
-zip -r SafeScribe-pi.zip . -x "venv/*" -x "Dev Stuff/AI Note-Taking Device/node_modules/*" -x "Dev Stuff/AI Note-Taking Device/build/*" -x "*.git*" -x ".DS_Store"
+zip -r SafeScribe-pi.zip . -x "venv/*" -x "frontend/node_modules/*" -x "frontend/build/*" -x "*.git*" -x ".DS_Store"
 ```
 
 Copy `SafeScribe-pi.zip` to a USB drive, then on the Pi:

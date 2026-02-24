@@ -67,7 +67,7 @@ ollama pull gemma2:2b-instruct-q4_0 2>/dev/null || echo "Ollama model pull - run
 
 # 6. Build frontend
 echo "Step 6/11: Building frontend..."
-cd "Dev Stuff/AI Note-Taking Device"
+cd frontend
 npm install
 npm run build
 cd "$PROJECT_ROOT"

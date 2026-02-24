@@ -7,8 +7,8 @@ __pycache__/
 *.egg-info/
 
 # Node / frontend
-Dev Stuff/AI Note-Taking Device/node_modules/
-Dev Stuff/AI Note-Taking Device/build/
+frontend/node_modules/
+frontend/build/
 npm-debug.log*
 
 # Local data (recordings, DB, exports)
