@@ -305,7 +305,23 @@ function App() {
   const renderScreen = () => {
     switch (state.currentScreen) {
       case 'setup-welcome':
-        return <SetupWelcome onNext={() => navigateTo('setup-wifi')} />;
+        return (
+          <SetupWelcome
+            onNext={async () => {
+              try {
+                const res = await api.wifiStatus();
+                if (res.connected && res.ssid) {
+                  updateSettings({ wifiSsid: res.ssid, wifiConnected: true });
+                  navigateTo('setup-email');
+                } else {
+                  navigateTo('setup-wifi');
+                }
+              } catch {
+                navigateTo('setup-wifi');
+              }
+            }}
+          />
+        );
       
       case 'setup-wifi':
         return (
@@ -320,11 +336,12 @@ function App() {
       case 'setup-email':
         return (
           <SetupEmail
-            onComplete={async (email: string) => {
-              updateSettings({ 
-                exportEmail: email, 
+            onComplete={async (email: string, appPassword: string) => {
+              await api.saveEmail(email, appPassword);
+              updateSettings({
+                exportEmail: email,
                 emailVerified: true,
-                setupComplete: true 
+                setupComplete: true,
               });
               navigateTo('home');
             }}
@@ -409,7 +426,8 @@ function App() {
             onUpdateWifi={(ssid) => {
               updateSettings({ wifiSsid: ssid, wifiConnected: true });
             }}
-            onUpdateEmail={async (email: string) => {
+            onUpdateEmail={async (email: string, appPassword: string) => {
+              await api.saveEmail(email, appPassword);
               updateSettings({ exportEmail: email, emailVerified: true });
             }}
             onFactoryReset={factoryReset}

@@ -1,4 +1,4 @@
-"""Email sending via SMTP - OTP verification and meeting PDFs. Use your email + 16-char app password."""
+"""Email sending via SMTP - meeting PDFs. Use your email + 16-char app password."""
 import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -7,21 +7,36 @@ from email.mime.application import MIMEApplication
 
 from config import SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_APP_PASSWORD, SMTP_FROM
 
+from api.services import storage
+
 
 def _get_smtp_config() -> dict | None:
-    """Return SMTP config if user and app password are set."""
-    if not SMTP_USER or not SMTP_APP_PASSWORD:
-        return None
-    return {
-        "host": SMTP_HOST,
-        "port": SMTP_PORT,
-        "login": SMTP_USER,
-        "password": SMTP_APP_PASSWORD,
-    }
+    """Return SMTP config from storage (UI setup) or env. User and app password must be set."""
+    # Prefer credentials saved via UI (storage)
+    stored_email = storage.get_setting("email_address")
+    stored_password = storage.get_setting("email_password")
+    if stored_email and stored_password:
+        return {
+            "host": SMTP_HOST,
+            "port": SMTP_PORT,
+            "login": stored_email,
+            "password": stored_password,
+        }
+    if SMTP_USER and SMTP_APP_PASSWORD:
+        return {
+            "host": SMTP_HOST,
+            "port": SMTP_PORT,
+            "login": SMTP_USER,
+            "password": SMTP_APP_PASSWORD,
+        }
+    return None
 
 
 def _from_address() -> str:
-    return SMTP_FROM.strip() or SMTP_USER
+    cfg = _get_smtp_config()
+    if cfg:
+        return SMTP_FROM.strip() or cfg["login"]
+    return SMTP_FROM.strip() or SMTP_USER or ""
 
 
 def _send_email(to_email: str, subject: str, body_text: str, attachments: list[tuple[str, bytes, str]] | None = None) -> bool:

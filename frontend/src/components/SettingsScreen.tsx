@@ -15,7 +15,7 @@ interface SettingsScreenProps {
   settings: Settings;
   onBack: () => void;
   onUpdateWifi: (ssid: string) => void;
-  onUpdateEmail: (email: string) => void | Promise<void>;
+  onUpdateEmail: (email: string, appPassword: string) => void | Promise<void>;
   onFactoryReset: () => void;
   onRunSetupAgain?: () => void;
 }
@@ -181,8 +181,8 @@ export function SettingsScreen({ settings, onBack, onUpdateWifi, onUpdateEmail, 
   if (view === 'email') {
     return (
       <SetupEmail
-        onComplete={async (email) => {
-          await onUpdateEmail(email);
+        onComplete={async (email, appPassword) => {
+          await onUpdateEmail(email, appPassword);
           setView('main');
         }}
         onBack={() => setView('main')}

@@ -83,16 +83,11 @@ export const api = {
       setupComplete: boolean;
     }>('/settings'),
 
-  // OTP email verification
-  sendOtp: (email: string) =>
-    fetchApi<{ status: string }>('/auth/send-otp', {
+  // Email setup (email + 16-char app password)
+  saveEmail: (email: string, password: string) =>
+    fetchApi<{ status: string }>('/settings/email', {
       method: 'POST',
-      body: { email },
-    }),
-  verifyOtp: (email: string, code: string) =>
-    fetchApi<{ status: string; email: string }>('/auth/verify-otp', {
-      method: 'POST',
-      body: { email, code },
+      body: { email, password },
     }),
   factoryReset: () =>
     fetchApi<{ status: string }>('/settings/factory-reset', { method: 'POST' }),
