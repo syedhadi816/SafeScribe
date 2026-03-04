@@ -8,7 +8,7 @@
 
 set -e
 
-DEFAULT_REPO="${SAFESCRIBE_REPO:-https://github.com/safescribe/safescribe}"
+DEFAULT_REPO="${SAFESCRIBE_REPO:-https://github.com/syedhadi816/SafeScribe}"
 INSTALL_DIR="${1:-$HOME/SafeScribe}"
 BRANCH="${SAFESCRIBE_BRANCH:-main}"
 

@@ -18,7 +18,7 @@ SafeScribe runs on a Raspberry Pi 5 as a touch-friendly kiosk. Record a meeting,
 
 ## Quick install (Raspberry Pi)
 
-On a Raspberry Pi with internet, run:
+On a Raspberry Pi with internet, run **one command** (no GitHub account or login required):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/syedhadi816/SafeScribe/main/raspberry-pi/bootstrap.sh | bash

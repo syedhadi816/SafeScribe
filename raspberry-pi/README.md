@@ -4,31 +4,31 @@ This folder contains everything needed to run SafeScribe as a kiosk on Raspberry
 
 ## One-command install from GitHub
 
-On a Raspberry Pi (with git installed), open Terminal and run **one** of these:
+On a Raspberry Pi (with internet), open Terminal and run **one command**. No GitHub account or login required.
 
-**Option A – one-liner (downloads and runs the installer):**
+**Option A – one-liner (recommended):**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/SafeScribe/main/raspberry-pi/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/syedhadi816/SafeScribe/main/raspberry-pi/bootstrap.sh | bash
 ```
 
-Replace `OWNER` with the GitHub username or org that hosts the repo (e.g. `safescribe`). By default the app is installed to `~/SafeScribe`. To install elsewhere:
+This installs to `~/SafeScribe`. To install elsewhere:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/SafeScribe/main/raspberry-pi/bootstrap.sh | bash -s -- /path/to/install
+curl -fsSL https://raw.githubusercontent.com/syedhadi816/SafeScribe/main/raspberry-pi/bootstrap.sh | bash -s -- /path/to/install
 ```
 
 **Option B – clone then install:**
 
 ```bash
-git clone https://github.com/OWNER/SafeScribe.git
+git clone https://github.com/syedhadi816/SafeScribe.git
 cd SafeScribe
 ./raspberry-pi/install.sh
 ```
 
 After install: enable desktop autologin (`sudo raspi-config` → Boot Options → Desktop Autologin) and reboot.
 
-**Using a different repo or branch?** Set `SAFESCRIBE_REPO` or `SAFESCRIBE_BRANCH` before running the one-liner, or use Option B with your clone URL.
+**Using a fork or different branch?** Set `SAFESCRIBE_REPO` or `SAFESCRIBE_BRANCH` before running the one-liner, or use Option B with your clone URL.
 
 ### Enabling email (your email + app password)
 
