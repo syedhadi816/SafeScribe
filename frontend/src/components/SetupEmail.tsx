@@ -55,28 +55,49 @@ export function SetupEmail({ onComplete, onSkip, onBack, showSkip = true }: Setu
 
   return (
     <div className="screen-container bg-gray-100 flex flex-col">
-      <div className="p-4 border-b border-gray-300 bg-white flex items-center gap-3">
-        {onBack && step === 'enter-email' && (
-          <button onClick={onBack} className="touch-target p-2 -ml-2">
-            <ArrowLeft className="w-6 h-6 text-gray-700" />
-          </button>
-        )}
-        {step === 'enter-password' && (
-          <button onClick={backToEmail} className="touch-target p-2 -ml-2" aria-label="Back">
-            <ArrowLeft className="w-6 h-6 text-gray-700" />
-          </button>
-        )}
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gray-200 rounded-xl flex items-center justify-center">
+      <div className="p-4 border-b border-gray-300 bg-white flex items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          {onBack && step === 'enter-email' && (
+            <button onClick={onBack} className="touch-target p-2 -ml-2 shrink-0">
+              <ArrowLeft className="w-6 h-6 text-gray-700" />
+            </button>
+          )}
+          {step === 'enter-password' && (
+            <button onClick={backToEmail} className="touch-target p-2 -ml-2 shrink-0" aria-label="Back">
+              <ArrowLeft className="w-6 h-6 text-gray-700" />
+            </button>
+          )}
+          <div className="w-12 h-12 bg-gray-200 rounded-xl flex items-center justify-center shrink-0">
             <Mail className="w-6 h-6 text-gray-700" />
           </div>
-          <div>
-            <h1 className="text-black">Email Setup</h1>
-            <p className="text-sm text-gray-600">
+          <div className="min-w-0">
+            <h1 className="text-black truncate">Email Setup</h1>
+            <p className="text-sm text-gray-600 truncate">
               {step === 'enter-email' ? 'Enter your email' : 'Enter 16-character app password'}
             </p>
           </div>
         </div>
+        {/* Next/Done in top right so it's always visible above keyboard */}
+        {step === 'enter-email' && (
+          <button
+            type="button"
+            onClick={handleEmailNext}
+            disabled={!email.trim().includes('@')}
+            className="touch-target shrink-0 h-10 px-4 bg-gray-800 text-white rounded-xl font-medium active:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        )}
+        {step === 'enter-password' && (
+          <button
+            type="button"
+            onClick={handlePasswordSubmit}
+            disabled={saving || appPassword.length !== 16}
+            className="touch-target shrink-0 h-10 px-4 bg-gray-800 text-white rounded-xl font-medium active:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? 'Saving...' : 'Done'}
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-hidden flex flex-col p-4 gap-3">

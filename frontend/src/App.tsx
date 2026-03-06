@@ -118,16 +118,43 @@ function App() {
   const fetchSettings = useCallback(async () => {
     try {
       const res = await api.getSettings();
-      setState(prev => ({
-        ...prev,
-        settings: {
-          ...prev.settings,
-          setupComplete: res.setupComplete ?? false,
-          emailVerified: res.emailConfigured ?? false,
-          exportEmail: res.emailAddress ?? undefined,
-        },
-        currentScreen: res.setupComplete ? 'home' : prev.currentScreen,
-      }));
+      const setupComplete = res.setupComplete ?? false;
+      if (setupComplete) {
+        setState(prev => ({
+          ...prev,
+          settings: {
+            ...prev.settings,
+            setupComplete: true,
+            emailVerified: res.emailConfigured ?? false,
+            exportEmail: res.emailAddress ?? undefined,
+          },
+          currentScreen: 'home',
+        }));
+      } else {
+        // Not set up yet: auto-detect WiFi and skip to email step if already connected
+        let nextScreen: Screen = 'setup-welcome';
+        let wifiUpdate: Partial<Settings> = {};
+        try {
+          const wifi = await api.wifiStatus();
+          if (wifi.connected && wifi.ssid) {
+            nextScreen = 'setup-email';
+            wifiUpdate = { wifiSsid: wifi.ssid, wifiConnected: true };
+          }
+        } catch {
+          // Keep setup-welcome; user will go through WiFi step
+        }
+        setState(prev => ({
+          ...prev,
+          settings: {
+            ...prev.settings,
+            setupComplete: false,
+            emailVerified: res.emailConfigured ?? false,
+            exportEmail: res.emailAddress ?? undefined,
+            ...wifiUpdate,
+          },
+          currentScreen: nextScreen,
+        }));
+      }
     } catch (e) {
       console.error('Failed to fetch settings:', e);
     } finally {

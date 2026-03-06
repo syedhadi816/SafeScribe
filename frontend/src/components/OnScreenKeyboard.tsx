@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Delete } from 'lucide-react';
+import { Delete, Eye, EyeOff } from 'lucide-react';
 
 const ROW1 = 'qwertyuiop';
 const ROW2 = 'asdfghjkl';
@@ -33,6 +33,7 @@ export function OnScreenKeyboard({
 }: OnScreenKeyboardProps) {
   const [shift, setShift] = useState(false);
   const [showNumbers, setShowNumbers] = useState(false);
+  const [showMasked, setShowMasked] = useState(true); // when true, show dots; toggle to show plain
   const showPassword = maskValue ?? (type === 'password');
 
   const insert = (char: string) => {
@@ -60,7 +61,9 @@ export function OnScreenKeyboard({
     </div>
   );
 
-  const displayValue = showPassword ? '•'.repeat(value.length) : (value || ' ');
+  const displayValue = showPassword
+    ? (showMasked ? '•'.repeat(value.length) : (value || ' '))
+    : (value || ' ');
 
   if (mode === 'numeric') {
     return (
@@ -116,6 +119,16 @@ export function OnScreenKeyboard({
         <span className="flex-1 text-xl font-medium tracking-wide truncate">
           {displayValue}
         </span>
+        {showPassword && (
+          <button
+            type="button"
+            onClick={() => setShowMasked((m) => !m)}
+            className="touch-target p-2 shrink-0 text-gray-600 hover:text-gray-800 rounded-lg"
+            aria-label={showMasked ? 'Show password' : 'Hide password'}
+          >
+            {showMasked ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+          </button>
+        )}
       </div>
       {/* Keyboard rows */}
       <div className="flex flex-col gap-1.5">
