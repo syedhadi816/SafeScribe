@@ -111,9 +111,6 @@ export function SetupEmail({ onComplete, onSkip, onBack, showSkip = true }: Setu
               value={email}
               onChange={(v) => { setEmail(v); setError(''); }}
               type="text"
-              onSubmit={handleEmailNext}
-              submitLabel="Next"
-              submitDisabled={!email.trim().includes('@')}
             />
             {showSkip && onSkip && (
               <button onClick={onSkip} className="w-full h-12 text-gray-600 touch-target text-sm shrink-0">
@@ -141,14 +138,22 @@ export function SetupEmail({ onComplete, onSkip, onBack, showSkip = true }: Setu
         )}
 
         {error && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-xl p-3 shrink-0">{error}</p>
+          <div className="shrink-0 space-y-2">
+            <p className="text-sm text-red-600 bg-red-50 rounded-xl p-3">{error}</p>
+            {step === 'enter-password' && (
+              <>
+                <p className="text-sm text-gray-700">Entered email: <strong>{email}</strong></p>
+                <button
+                  type="button"
+                  onClick={backToEmail}
+                  className="w-full text-sm text-gray-600 underline touch-target py-2"
+                >
+                  ← Use a different email
+                </button>
+              </>
+            )}
+          </div>
         )}
-      </div>
-
-      <div className="p-4 border-t border-gray-300 bg-white">
-        <p className="text-xs text-center text-gray-500">
-          Your email and app password stay on this device. Notes are only sent to your inbox.
-        </p>
       </div>
     </div>
   );

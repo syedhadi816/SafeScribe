@@ -39,6 +39,24 @@ def _from_address() -> str:
     return SMTP_FROM.strip() or SMTP_USER or ""
 
 
+def validate_smtp_login(email: str, password: str) -> tuple[bool, str]:
+    """Try SMTP login with given credentials. Returns (success, error_message)."""
+    if not email or not password:
+        return False, "Email and app password are required."
+    email = email.strip().lower()
+    if "@" not in email:
+        return False, "Enter a valid email address."
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
+            server.starttls()
+            server.login(email, password)
+        return True, ""
+    except smtplib.SMTPAuthenticationError as e:
+        return False, "Invalid email or app password. Check the address and 16-character app password."
+    except Exception as e:
+        return False, str(e) if str(e) else "Could not verify credentials."
+
+
 def _send_email(to_email: str, subject: str, body_text: str, attachments: list[tuple[str, bytes, str]] | None = None) -> bool:
     """Send email via SMTP (Gmail, Outlook, etc. with app password)."""
     cfg = _get_smtp_config()

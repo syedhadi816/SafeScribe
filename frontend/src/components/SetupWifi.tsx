@@ -67,6 +67,10 @@ export function SetupWifi({ onNext }: SetupWifiProps) {
   };
 
   const handleSelectNetwork = (ssid: string) => {
+    if (connected && connectedSsid && ssid === connectedSsid) {
+      onNext(ssid);
+      return;
+    }
     setSelectedSsid(ssid);
     setConnectError('');
     setPassword('');

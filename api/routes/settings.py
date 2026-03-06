@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from api.services import storage
 from api.services import wifi as wifi_service
+from api.services import email_sender
 from config import DB_PATH
 
 router = APIRouter(prefix="/settings", tags=["settings"])
@@ -53,7 +54,10 @@ def get_settings():
 
 @router.post("/email")
 def save_email(data: EmailSettings):
-    storage.set_setting("email_address", data.email)
+    ok, err = email_sender.validate_smtp_login(data.email.strip(), data.password)
+    if not ok:
+        raise HTTPException(status_code=400, detail=err)
+    storage.set_setting("email_address", data.email.strip().lower())
     storage.set_setting("email_password", data.password)
     storage.set_setting("setup_complete", "true")
     return {"status": "saved"}
