@@ -76,4 +76,4 @@ Then copy `SafeScribe-pi.zip` to the Pi and unzip in your home folder.
 3. Enable auto-login: `sudo raspi-config` → Boot Options → Desktop Autologin
 4. Reboot: `sudo reboot`
 
-See **docs/PI-SETUP-GUIDE.md** for the full step-by-step guide.
+See [docs/PI-SETUP-GUIDE.md](https://github.com/syedhadi816/SafeScribe/blob/main/docs/PI-SETUP-GUIDE.md) for the full step-by-step guide.

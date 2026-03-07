@@ -114,7 +114,7 @@ To have meeting notes emailed to you, use **your email and a 16-character app pa
 1. Create an app password: [Gmail](https://myaccount.google.com/apppasswords), [Outlook](https://account.microsoft.com/security), or your provider’s “app password” in security settings.
 2. In the app: **Get Started** → **Email setup** (or **Settings** → **Email** after setup) to enter your email and the 16-character app password.
 
-See **raspberry-pi/README.md** (section “Enabling email”) for more detail.
+See [raspberry-pi/README.md](https://github.com/syedhadi816/SafeScribe/blob/main/raspberry-pi/README.md) (section “Enabling email”) for more detail.
 
 ---
 
