@@ -42,22 +42,39 @@ export function SetupWifi({ onNext }: SetupWifiProps) {
     }
   };
 
-  const checkStatus = async () => {
+  const checkStatus = async (): Promise<{ connected: boolean; ssid: string | null }> => {
     setCheckingStatus(true);
     try {
       const res = await api.wifiStatus();
-      setConnected(res.connected ?? false);
-      setConnectedSsid(res.ssid ?? null);
+      const connected = res.connected ?? false;
+      const ssid = res.ssid ?? null;
+      setConnected(connected);
+      setConnectedSsid(ssid);
+      return { connected, ssid };
     } catch {
       setConnected(false);
       setConnectedSsid(null);
+      return { connected: false, ssid: null };
     } finally {
       setCheckingStatus(false);
     }
   };
 
   useEffect(() => {
-    checkStatus().then(doScan);
+    let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    checkStatus().then(({ connected, ssid }) => {
+      if (cancelled) return;
+      if (connected && ssid) {
+        timeoutId = setTimeout(() => onNext(ssid), 400);
+      } else {
+        doScan();
+      }
+    });
+    return () => {
+      cancelled = true;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   const sortedNetworks = useMemo(() => {

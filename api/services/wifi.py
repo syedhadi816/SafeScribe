@@ -4,27 +4,78 @@ import sys
 from typing import TypedDict
 
 
+def _wifi_status_nmcli_con() -> dict:
+    """Use 'nmcli con show --active'. Handles both value:value and key:value output formats."""
+    try:
+        out = subprocess.run(
+            ["nmcli", "-t", "-f", "GENERAL.STATE,NAME", "con", "show", "--active"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if out.returncode != 0 or not out.stdout.strip():
+            return {"connected": False, "ssid": None}
+        state_activated = False
+        ssid_from_name = None
+        for line in out.stdout.strip().splitlines():
+            parts = line.split(":", 1)
+            if len(parts) < 2:
+                continue
+            first = (parts[0] or "").strip()
+            second = (parts[1] or "").strip()
+            # Format 1: value:value e.g. "activated:MyWiFi" (state then name)
+            if "activated" in first.lower() and second and second != "--":
+                return {"connected": True, "ssid": second}
+            # Format 2: value:value e.g. "MyWiFi:activated" (name then state - some versions)
+            if "activated" in second.lower() and first and first != "--":
+                return {"connected": True, "ssid": first}
+            # Format 3: key:value e.g. "GENERAL.STATE:activated" and "NAME:MyWiFi"
+            if "STATE" in first.upper() and "activated" in second.lower():
+                state_activated = True
+            if "NAME" in first.upper() and second and second != "--":
+                ssid_from_name = second
+        if state_activated and ssid_from_name:
+            return {"connected": True, "ssid": ssid_from_name}
+        return {"connected": False, "ssid": None}
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return {"connected": False, "ssid": None}
+
+
+def _wifi_status_nmcli_dev_fallback() -> dict:
+    """Fallback: use device status (DEVICE:TYPE:STATE:CONNECTION) to find WiFi. Prefer wifi type."""
+    try:
+        out = subprocess.run(
+            ["nmcli", "-t", "-f", "DEVICE,TYPE,STATE,CONNECTION", "dev", "status"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if out.returncode != 0 or not out.stdout.strip():
+            return {"connected": False, "ssid": None}
+        any_conn = None
+        for line in out.stdout.strip().splitlines():
+            fields = [f.strip() for f in line.split(":")]
+            if len(fields) < 3:
+                continue
+            conn = fields[-1]
+            state = (fields[-2] if len(fields) >= 2 else "").lower()
+            if state not in ("connected", "activated") or not conn or conn == "--":
+                continue
+            dev_type = (fields[1] if len(fields) >= 2 else "").lower()
+            if dev_type == "wifi":
+                return {"connected": True, "ssid": conn}
+            if not any_conn:
+                any_conn = conn
+        if any_conn:
+            return {"connected": True, "ssid": any_conn}
+        return {"connected": False, "ssid": None}
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return {"connected": False, "ssid": None}
+
+
 def wifi_status() -> dict:
     """Return { connected: bool, ssid: str | None }."""
     if sys.platform.startswith("linux"):
-        try:
-            out = subprocess.run(
-                ["nmcli", "-t", "-f", "GENERAL.STATE,NAME", "con", "show", "--active"],
-                capture_output=True, text=True, timeout=5,
-            )
-            if out.returncode == 0 and out.stdout.strip():
-                # nmcli -t outputs value:value per line (state_value:name_value), not key:value
-                for line in out.stdout.strip().splitlines():
-                    parts = line.split(":", 1)
-                    if len(parts) < 2:
-                        continue
-                    state_value = (parts[0] or "").strip()
-                    name_value = (parts[1] or "").strip()
-                    if "activated" in state_value.lower() and name_value and name_value != "--":
-                        return {"connected": True, "ssid": name_value}
-            return {"connected": False, "ssid": None}
-        except (FileNotFoundError, subprocess.TimeoutExpired):
-            return {"connected": False, "ssid": None}
+        result = _wifi_status_nmcli_con()
+        if result["connected"]:
+            return result
+        return _wifi_status_nmcli_dev_fallback()
     elif sys.platform == "darwin":
         try:
             out = subprocess.run(
