@@ -13,20 +13,15 @@ def wifi_status() -> dict:
                 capture_output=True, text=True, timeout=5,
             )
             if out.returncode == 0 and out.stdout.strip():
-                # Parse FIELD:value lines; STATE value must contain "activated", SSID from NAME
-                state_activated = False
-                ssid = None
+                # nmcli -t outputs value:value per line (state_value:name_value), not key:value
                 for line in out.stdout.strip().splitlines():
                     parts = line.split(":", 1)
                     if len(parts) < 2:
                         continue
-                    key, value = (parts[0] or "").strip(), (parts[1] or "").strip()
-                    if "STATE" in key.upper() and "activated" in (value or "").lower():
-                        state_activated = True
-                    if "NAME" in key.upper() and value and value != "--":
-                        ssid = value
-                if state_activated and ssid:
-                    return {"connected": True, "ssid": ssid}
+                    state_value = (parts[0] or "").strip()
+                    name_value = (parts[1] or "").strip()
+                    if "activated" in state_value.lower() and name_value and name_value != "--":
+                        return {"connected": True, "ssid": name_value}
             return {"connected": False, "ssid": None}
         except (FileNotFoundError, subprocess.TimeoutExpired):
             return {"connected": False, "ssid": None}

@@ -17,6 +17,7 @@ export function SetupEmail({ onComplete, onSkip, onBack, showSkip = true }: Setu
   const [appPassword, setAppPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [showPasswordErrorModal, setShowPasswordErrorModal] = useState(false);
 
   const handleEmailNext = () => {
     const e = email.trim().toLowerCase();
@@ -40,9 +41,8 @@ export function SetupEmail({ onComplete, onSkip, onBack, showSkip = true }: Setu
     setError('');
     try {
       await onComplete(email, p);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : '';
-      setError(msg || 'Invalid email or app password. Please check and try again or use a different email.');
+    } catch {
+      setShowPasswordErrorModal(true);
     } finally {
       setSaving(false);
     }
@@ -135,26 +135,31 @@ export function SetupEmail({ onComplete, onSkip, onBack, showSkip = true }: Setu
           </div>
         )}
 
-        {error && (
-          <div className="shrink-0 space-y-2" role="alert">
-            <p className="text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-xl p-3">
-              {error}
-            </p>
-            {step === 'enter-password' && (
-              <>
-                <p className="text-sm text-gray-700">Entered email: <strong>{email}</strong></p>
-                <button
-                  type="button"
-                  onClick={backToEmail}
-                  className="w-full text-sm text-gray-600 underline touch-target py-2"
-                >
-                  ← Use a different email
-                </button>
-              </>
-            )}
-          </div>
+        {error && (step !== 'enter-password' || !showPasswordErrorModal) && (
+          <p className="text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-xl p-3 shrink-0">
+            {error}
+          </p>
         )}
       </div>
+
+      {showPasswordErrorModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+            <p className="text-gray-800 leading-relaxed">
+              Your email <strong>{email}</strong> or 16 digit app password is incorrect. Please re-enter.
+            </p>
+            <div className="mt-6">
+              <button
+                type="button"
+                onClick={() => setShowPasswordErrorModal(false)}
+                className="w-full h-12 bg-gray-800 hover:bg-gray-900 active:bg-black text-white rounded-xl font-medium touch-target"
+              >
+                Got It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
