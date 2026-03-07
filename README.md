@@ -27,7 +27,7 @@ curl -fsSL https://raw.githubusercontent.com/syedhadi816/SafeScribe/main/raspber
 This clones the repo to `~/SafeScribe`, installs dependencies, builds the frontend, and configures the kiosk. Then:
 
 1. Enable desktop autologin: `sudo raspi-config` → **Boot Options** → **Desktop Autologin**
-2. Configure email (optional but recommended): edit `/etc/safescribe/env` and add your **email** and **16-character app password** ([Gmail](https://myaccount.google.com/apppasswords), [Outlook](https://account.microsoft.com/security))
+2. Configure email: when SafeScribe opens, use **Get Started** → **Email setup** to enter your email and 16-character app password ([Gmail](https://myaccount.google.com/apppasswords), [Outlook](https://account.microsoft.com/security)). You can also set it later in **Settings** → **Email**.
 3. Reboot: `sudo reboot`
 
 After reboot, SafeScribe opens in fullscreen. First run: connect WiFi and set the email address that will receive notes.
@@ -46,7 +46,7 @@ cd SafeScribe
 
 - **Raspberry Pi 5** (recommended; Pi 4 may work with slower performance)
 - **Raspberry Pi OS** (desktop)
-- **Network** — For install and (optionally) email; transcription and summarization run locally
+- **Network** — For install and email; transcription and summarization run locally
 - **Email** — Your email address + a 16-character app password (no separate service sign-up)
 
 ---
