@@ -131,18 +131,7 @@ function App() {
           currentScreen: 'home',
         }));
       } else {
-        // Not set up yet: auto-detect WiFi and skip to email step if already connected
-        let nextScreen: Screen = 'setup-welcome';
-        let wifiUpdate: Partial<Settings> = {};
-        try {
-          const wifi = await api.wifiStatus();
-          if (wifi.connected && wifi.ssid) {
-            nextScreen = 'setup-email';
-            wifiUpdate = { wifiSsid: wifi.ssid, wifiConnected: true };
-          }
-        } catch {
-          // Keep setup-welcome; user will go through WiFi step
-        }
+        // Not set up yet: always show Get Started first; WiFi check happens when they click Get Started
         setState(prev => ({
           ...prev,
           settings: {
@@ -150,9 +139,8 @@ function App() {
             setupComplete: false,
             emailVerified: res.emailConfigured ?? false,
             exportEmail: res.emailAddress ?? undefined,
-            ...wifiUpdate,
           },
-          currentScreen: nextScreen,
+          currentScreen: 'setup-welcome',
         }));
       }
     } catch (e) {

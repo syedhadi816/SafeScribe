@@ -58,7 +58,7 @@ Action items:"""
     return ollama.generate(
         model=MODEL_NAME,
         prompt=prompt,
-        options={"num_predict": 100, "temperature": 0.3}
+        options={"num_predict": 150, "temperature": 0.3}
     ).get("response", "").strip()
 
 
@@ -74,7 +74,7 @@ Decisions:"""
     return ollama.generate(
         model=MODEL_NAME,
         prompt=prompt,
-        options={"num_predict": 100, "temperature": 0.3}
+        options={"num_predict": 150, "temperature": 0.3}
     ).get("response", "").strip()
 
 
@@ -90,7 +90,7 @@ Main topics:"""
     return ollama.generate(
         model=MODEL_NAME,
         prompt=prompt,
-        options={"num_predict": 150, "temperature": 0.4}
+        options={"num_predict": 200, "temperature": 0.4}
     ).get("response", "").strip()
 
 
@@ -135,7 +135,7 @@ Summary (2-3 sentences only):"""
     result = ollama.generate(
         model=MODEL_NAME,
         prompt=summary_prompt,
-        options={"num_predict": 150, "temperature": 0.5}
+        options={"num_predict": 200, "temperature": 0.5}
     )
     
     summary = result.get("response", "").strip()
