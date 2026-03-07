@@ -66,8 +66,8 @@ cd SafeScribe
 
 ## Documentation
 
-- **[Step-by-step setup and troubleshooting](https://github.com/syedhadi816/SafeScribe/blob/main/raspberry-pi/README.md)** — Full step-by-step setup and troubleshooting
-- **[One-command install, email setup, manual install from USB](https://github.com/syedhadi816/SafeScribe/blob/main/docs/PI-SETUP-GUIDE.md)** — Pi deployment, one-command install, email (app password) setup
+- **[raspberry-pi/README.md](https://github.com/safescribe-ai/SafeScribe/blob/main/raspberry-pi/README.md)** — Step-by-step setup and troubleshooting
+- **[docs/PI-SETUP-GUIDE.md](https://github.com/safescribe-ai/SafeScribe/blob/main/docs/PI-SETUP-GUIDE.md)** — One-command install, email setup, manual install from USB
 
 ---
 
