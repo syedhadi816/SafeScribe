@@ -1,4 +1,4 @@
-# SafeScribe
+# [SafeScribe](https://safescribe-ai.github.io/)
 
 **AI meeting notes on a Raspberry Pi kiosk — record, transcribe, summarize, and email.**
 
