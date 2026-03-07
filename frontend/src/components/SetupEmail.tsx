@@ -41,7 +41,8 @@ export function SetupEmail({ onComplete, onSkip, onBack, showSkip = true }: Setu
     try {
       await onComplete(email, p);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save.');
+      const msg = err instanceof Error ? err.message : '';
+      setError(msg || 'Invalid email or app password. Please check and try again or use a different email.');
     } finally {
       setSaving(false);
     }
@@ -130,16 +131,15 @@ export function SetupEmail({ onComplete, onSkip, onBack, showSkip = true }: Setu
               onChange={(v) => { setAppPassword(v.replace(/\s/g, '').slice(0, 16)); setError(''); }}
               type="text"
               maskValue
-              onSubmit={handlePasswordSubmit}
-              submitLabel={saving ? 'Saving...' : 'Done'}
-              submitDisabled={saving || appPassword.length !== 16}
             />
           </div>
         )}
 
         {error && (
-          <div className="shrink-0 space-y-2">
-            <p className="text-sm text-red-600 bg-red-50 rounded-xl p-3">{error}</p>
+          <div className="shrink-0 space-y-2" role="alert">
+            <p className="text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-xl p-3">
+              {error}
+            </p>
             {step === 'enter-password' && (
               <>
                 <p className="text-sm text-gray-700">Entered email: <strong>{email}</strong></p>

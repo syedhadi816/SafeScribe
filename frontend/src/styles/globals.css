@@ -190,10 +190,12 @@ html {
   font-size: var(--font-size);
 }
 
-/* Prevent double-tap zoom on touchscreens */
+/* Prevent double-tap zoom on touchscreens; disable text selection (stylus drag) */
 .device-container,
 .device-container * {
   touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Device container - optimized for 4-inch touchscreen (800x480 landscape) */

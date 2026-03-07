@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Wifi, ChevronRight, RefreshCw, Lock, ArrowLeft } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Wifi, ChevronRight, RefreshCw, Lock, ArrowLeft, Check } from 'lucide-react';
 import { api } from '../api';
 import { OnScreenKeyboard } from './OnScreenKeyboard';
 
@@ -60,10 +60,17 @@ export function SetupWifi({ onNext }: SetupWifiProps) {
     checkStatus().then(doScan);
   }, []);
 
-  const handleContinue = () => {
-    if (connected && connectedSsid) {
-      onNext(connectedSsid);
-    }
+  const sortedNetworks = useMemo(() => {
+    if (!connectedSsid) return networks;
+    const list = [...networks];
+    const idx = list.findIndex((n) => n.ssid === connectedSsid);
+    if (idx <= 0) return list;
+    const [connected] = list.splice(idx, 1);
+    return [connected, ...list];
+  }, [networks, connectedSsid]);
+
+  const handleNext = () => {
+    if (connected && connectedSsid) onNext(connectedSsid);
   };
 
   const handleSelectNetwork = (ssid: string) => {
@@ -133,96 +140,95 @@ export function SetupWifi({ onNext }: SetupWifiProps) {
     );
   }
 
-  // Network list page - swipe-friendly, no zoom
+  // Network list page - sorted with connected first; Next in header when connected
   return (
     <div className="screen-container bg-gray-100 flex flex-col">
-      <div className="p-4 border-b border-gray-300 bg-white shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gray-200 rounded-xl flex items-center justify-center">
+      <div className="p-4 border-b border-gray-300 bg-white flex items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-12 h-12 bg-gray-200 rounded-xl flex items-center justify-center shrink-0">
             <Wifi className="w-6 h-6 text-gray-700" />
           </div>
-          <div>
-            <h1 className="text-black">WiFi Setup</h1>
-            <p className="text-sm text-gray-600">Swipe to scroll • Tap a network</p>
+          <div className="min-w-0">
+            <h1 className="text-black truncate">WiFi Setup</h1>
+            <p className="text-sm text-gray-600 truncate">Swipe to scroll • Tap a network</p>
           </div>
         </div>
+        <button
+          type="button"
+          onClick={handleNext}
+          disabled={!connected || !connectedSsid}
+          className="touch-target shrink-0 h-10 px-4 bg-gray-800 text-white rounded-xl font-medium active:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+        </button>
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col p-4">
-        {/* If already connected, show Continue */}
-        {!checkingStatus && connected && connectedSsid && (
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-3 shrink-0">
-            <div className="flex items-center gap-2 text-green-800 font-medium">
-              <Wifi className="w-5 h-5" />
-              Connected to {connectedSsid}
-            </div>
-            <button
-              onClick={handleContinue}
-              className="w-full h-14 bg-gray-800 hover:bg-gray-900 active:bg-black text-white rounded-xl shadow transition-all touch-target font-medium"
-            >
-              Continue
-            </button>
-          </div>
-        )}
+        <div className="flex items-center justify-between shrink-0 mb-2">
+          <label className="text-sm font-medium text-gray-800">Select a network</label>
+          <button
+            onClick={() => {
+              checkStatus();
+              doScan();
+            }}
+            disabled={scanning}
+            className="flex items-center gap-2 text-sm text-gray-700 touch-target disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${scanning ? 'animate-spin' : ''}`} />
+            {scanning ? 'Scanning...' : 'Refresh'}
+          </button>
+        </div>
 
-        {/* Network list - touch-scroll for swipe, no sidebar */}
-        {(!connected || !connectedSsid) && (
-          <>
-            <div className="flex items-center justify-between shrink-0 mb-2">
-              <label className="text-sm font-medium text-gray-800">Select a network</label>
-              <button
-                onClick={() => {
-                  checkStatus();
-                  doScan();
-                }}
-                disabled={scanning}
-                className="flex items-center gap-2 text-sm text-gray-700 touch-target disabled:opacity-50"
-              >
-                <RefreshCw className={`w-4 h-4 ${scanning ? 'animate-spin' : ''}`} />
-                {scanning ? 'Scanning...' : 'Refresh'}
-              </button>
-            </div>
+        <div className="flex-1 min-h-0 touch-scroll">
+          {scanning && sortedNetworks.length === 0 && (
+            <p className="text-sm text-gray-500 text-center py-6">Scanning for networks...</p>
+          )}
 
-            <div className="flex-1 min-h-0 touch-scroll">
-              {scanning && networks.length === 0 && (
-                <p className="text-sm text-gray-500 text-center py-6">Scanning for networks...</p>
-              )}
-
-              {!scanning && networks.length > 0 && (
-                <div className="space-y-2 pb-4">
-                  {networks.map((net) => (
-                    <button
-                      key={net.ssid}
-                      onClick={() => handleSelectNetwork(net.ssid)}
-                      className="w-full h-14 px-4 rounded-xl border-2 border-gray-300 bg-white active:bg-gray-200 transition-all touch-target flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        {net.secure ? (
-                          <Lock className="w-5 h-5 text-gray-600 shrink-0" />
-                        ) : (
-                          <Wifi className="w-5 h-5 text-gray-600 shrink-0" />
-                        )}
-                        <span className="truncate text-left">{net.ssid}</span>
-                        {net.signal >= 0 && (
-                          <span className="text-xs text-gray-500 shrink-0">{net.signal}%</span>
-                        )}
-                      </div>
+          {!scanning && sortedNetworks.length > 0 && (
+            <div className="space-y-2 pb-4">
+              {sortedNetworks.map((net) => {
+                const isConnected = connected && connectedSsid && net.ssid === connectedSsid;
+                return (
+                  <button
+                    key={net.ssid}
+                    onClick={() => handleSelectNetwork(net.ssid)}
+                    className={`w-full h-14 px-4 rounded-xl border-2 transition-all touch-target flex items-center justify-between ${
+                      isConnected ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-white active:bg-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {net.secure ? (
+                        <Lock className="w-5 h-5 text-gray-600 shrink-0" />
+                      ) : (
+                        <Wifi className="w-5 h-5 text-gray-600 shrink-0" />
+                      )}
+                      <span className="truncate text-left">{net.ssid}</span>
+                      {net.signal >= 0 && (
+                        <span className="text-xs text-gray-500 shrink-0">{net.signal}%</span>
+                      )}
+                    </div>
+                    {isConnected ? (
+                      <span className="flex items-center gap-1.5 text-green-700 font-medium shrink-0">
+                        <Check className="w-5 h-5" />
+                        Connected
+                      </span>
+                    ) : (
                       <ChevronRight className="w-5 h-5 text-gray-400 shrink-0" />
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {!scanning && networks.length === 0 && !scanError && (
-                <p className="text-sm text-gray-500 text-center py-6">No networks found. Tap Refresh.</p>
-              )}
-
-              {scanError && (
-                <p className="text-sm text-amber-700 bg-amber-50 rounded-xl p-3 mt-2">{scanError}</p>
-              )}
+                    )}
+                  </button>
+                );
+              })}
             </div>
-          </>
-        )}
+          )}
+
+          {!scanning && sortedNetworks.length === 0 && !scanError && (
+            <p className="text-sm text-gray-500 text-center py-6">No networks found. Tap Refresh.</p>
+          )}
+
+          {scanError && (
+            <p className="text-sm text-amber-700 bg-amber-50 rounded-xl p-3 mt-2">{scanError}</p>
+          )}
+        </div>
       </div>
     </div>
   );
