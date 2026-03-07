@@ -12,6 +12,24 @@ MODEL_NAME = "gemma2:2b-instruct-q4_0"
 MAX_PARALLEL_LLM = 4
 
 
+def num_predict_for(
+    text: str,
+    base: int,
+    cap: int = 512,
+    step: int = 25,
+    words_per_step: int = 500,
+) -> int:
+    """
+    Dynamic num_predict from input length to avoid mid-sentence cutoffs on long content.
+    Returns base + extra tokens (scaled by word count), clamped to cap.
+    """
+    if not (text or "").strip():
+        return base
+    words = len(text.split())
+    extra = (words // words_per_step) * step
+    return min(cap, base + extra)
+
+
 # ============================================================================
 # STAGE 1: Transcript Segmentation
 # ============================================================================
@@ -55,10 +73,11 @@ Transcript:
 {transcript}
 
 Action items:"""
+    n = num_predict_for(transcript, base=150, cap=450)
     return ollama.generate(
         model=MODEL_NAME,
         prompt=prompt,
-        options={"num_predict": 150, "temperature": 0.3}
+        options={"num_predict": n, "temperature": 0.3}
     ).get("response", "").strip()
 
 
@@ -71,10 +90,11 @@ Transcript:
 {transcript}
 
 Decisions:"""
+    n = num_predict_for(transcript, base=150, cap=450)
     return ollama.generate(
         model=MODEL_NAME,
         prompt=prompt,
-        options={"num_predict": 150, "temperature": 0.3}
+        options={"num_predict": n, "temperature": 0.3}
     ).get("response", "").strip()
 
 
@@ -87,10 +107,11 @@ Transcript:
 {transcript}
 
 Main topics:"""
+    n = num_predict_for(transcript, base=200, cap=400)
     return ollama.generate(
         model=MODEL_NAME,
         prompt=prompt,
-        options={"num_predict": 200, "temperature": 0.4}
+        options={"num_predict": n, "temperature": 0.4}
     ).get("response", "").strip()
 
 
@@ -131,11 +152,11 @@ Transcript:
 {transcript}
 
 Summary (2-3 sentences only):"""
-    
+    n = num_predict_for(transcript, base=200, cap=400)
     result = ollama.generate(
         model=MODEL_NAME,
         prompt=summary_prompt,
-        options={"num_predict": 200, "temperature": 0.5}
+        options={"num_predict": n, "temperature": 0.5}
     )
     
     summary = result.get("response", "").strip()
@@ -154,10 +175,11 @@ Summary:
 {text}
 
 Title:"""
+    n = num_predict_for(text, base=30, cap=80, step=5, words_per_step=100)
     result = ollama.generate(
         model=MODEL_NAME,
         prompt=prompt,
-        options={"num_predict": 30, "temperature": 0.3}
+        options={"num_predict": n, "temperature": 0.3}
     )
     return result.get("response", "").strip()
 
@@ -177,10 +199,12 @@ Segment Summaries:
 {chr(10).join(segment_summaries)}
 
 Response:"""
+    combined = chr(10).join(segment_summaries)
+    n = num_predict_for(combined, base=200, cap=500)
     result = ollama.generate(
         model=MODEL_NAME,
         prompt=prompt,
-        options={"num_predict": 200, "temperature": 0.4}
+        options={"num_predict": n, "temperature": 0.4}
     )
     response = result.get("response", "").strip()
 
