@@ -71,6 +71,18 @@ cd SafeScribe
 
 ---
 
+## Releases & download tracking
+
+- Download packages from **[Releases](https://github.com/safescribe-ai/SafeScribe/releases/latest)**:
+  - `SafeScribe-pi.zip` (Pi transfer/install package)
+  - `SafeScribe-deploy.zip` (source package for distribution/submission)
+- Release assets are created automatically when you push a tag like `v1.0.0`.
+- Download counts are visible:
+  - In GitHub UI: open a release and see each asset's download count.
+  - In API/CLI: use `./scripts/download-stats.sh safescribe-ai SafeScribe`.
+
+---
+
 ## License
 
 MIT.

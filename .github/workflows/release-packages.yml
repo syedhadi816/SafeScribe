@@ -1,0 +1,31 @@
+name: Release Packages
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build package artifacts
+        run: |
+          chmod +x raspberry-pi/create-pi-package.sh
+          chmod +x scripts/create-deploy-package.sh
+          ./raspberry-pi/create-pi-package.sh
+          ./scripts/create-deploy-package.sh
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            SafeScribe-pi.zip
+            SafeScribe-deploy.zip
