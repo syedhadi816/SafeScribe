@@ -7,9 +7,9 @@ import uuid
 from datetime import datetime
 from typing import Callable, Optional
 
-from recorder import AudioRecorder
-from stt import WhisperSTT
-from summarizer import save_summary_as_pdf
+from engine.recorder import AudioRecorder
+from engine.stt import WhisperSTT
+from engine.summarizer import save_summary_as_pdf
 from config import MEETINGS_DIR
 from api.services import storage
 from api.services.email_sender import send_meeting_pdf

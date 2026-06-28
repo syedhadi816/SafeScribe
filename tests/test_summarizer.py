@@ -1,6 +1,6 @@
 import time
 from pathlib import Path
-from summarizer import save_summary_as_pdf
+from engine.summarizer import save_summary_as_pdf
 
 TRANSCRIPT_PATH = Path("transcript.txt")
 OUTPUT_PDF = Path("testing.pdf")

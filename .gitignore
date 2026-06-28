@@ -30,5 +30,8 @@ Thumbs.db
 SafeScribe-pi.zip
 SafeScribe-deploy.zip
 
-# Large binaries (Node installer etc.)
+# Large binaries / installers
 *.pkg
+
+# Nested repos (separate projects, not tracked here)
+safescribe_website/

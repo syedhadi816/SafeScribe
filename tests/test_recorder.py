@@ -1,4 +1,4 @@
-from recorder import AudioRecorder
+from engine.recorder import AudioRecorder
 import time
 
 rec = AudioRecorder()
